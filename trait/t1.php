@@ -37,4 +37,7 @@ $object->numberSeriesC();
 $object->numberSeriesD();
 
 
+// jkono class trait k use korte parbe
+
+
 
