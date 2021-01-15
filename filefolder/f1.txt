@@ -1,8 +1,0 @@
-mercury
-pcntl_signal_get_handler
-planet
-motobike
-cycle
-cal_from_jd
-bus
-truck
