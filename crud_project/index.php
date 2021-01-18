@@ -1,12 +1,63 @@
 <?php require_once 'inc/functions.php';
 $info = '';
 $task = $_GET['task'] ?? 'report';
+$error = $_GET['error'] ?? '0';
 
-if('seed' == $task){
-    seed(DB_NAME);
+if($task == 'seed'){
+    seed();
 
     echo "Sending is Complete";
 }
+
+if('delete' == $task){
+
+    $id   = filter_input(INPUT_GET,'id',FILTER_SANITIZE_STRING);
+
+    if($id>0){
+        deleteStudent($id);
+        header('location: index.php?task=report');
+    }
+}
+
+$fname = '';
+$lname = '';
+$roll = '';
+if(isset($_POST['submit'])){
+    $fname = filter_input(INPUT_POST,'fname',FILTER_SANITIZE_STRING);
+    $lname = filter_input(INPUT_POST,'lname',FILTER_SANITIZE_STRING);
+    $roll   = filter_input(INPUT_POST,'roll',FILTER_SANITIZE_STRING);
+    $id   = filter_input(INPUT_POST,'id',FILTER_SANITIZE_STRING);
+
+    
+    if($id) {
+
+        // update the existing studnet
+        $result = updateStudent($id,$fname,$lname,$roll);
+        if($result){
+            header('location: index.php?task=report');
+        }else{
+            $error = 1;
+        }
+    }else{
+
+        // add new student
+        if($fname != '' && $lname != '' && $roll != ''){
+
+            $result = addStudent($fname,$lname,$roll);
+    
+            if($result){
+                header('location: index.php?task=report');
+            }else{
+                $error = 1;
+            }
+    
+            
+        }
+    }
+   
+}
+
+
 
 ?>
 <!DOCTYPE html>
@@ -28,6 +79,25 @@ if('seed' == $task){
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
 <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+<style>
+    table{
+        border: 1px solid gray;
+        width: 400px;
+        margin: 0 auto;
+    }
+
+    table tr th,table tr td{
+        border:1px solid gray;
+        border: 1px solid gray;
+        padding: 5px 10px;
+        text-align: center;
+    }
+
+    .contact-three .form-col {
+        text-align: center;
+        margin: 0 auto;
+    }
+</style>
 </head>
 
 <body>
@@ -62,121 +132,65 @@ if('seed' == $task){
                 </div>
             </div>
         </div>
-        <?php include_once "templates/nav.php";
-       999                             
+        <?php require_once "inc/templates/nav.php";                      
         ?>
         <hr/>
-        <?php 
-            if($info != ''){
-                echo "<p>{$info}</p>";
-            }
-        ?>
+        <?php if('1' == $error){ ?>
+        <section class="contact-three">
+            <div class="outer-container">
+                <div class="row clearfix">
+                    <div class="text-col col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                       <blockquote>Duplicate Roll Number</blockquote>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <?php } ?>
+        <?php if('report' == $task){ ?>
+        <section class="contact-three">
+            <div class="outer-container">
+                <div class="row clearfix">
+                    <div class="text-col col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                        <?php generateReport();?>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <?php } ?>
+        <?php if('add' == $task){ ?>
         <!--End Header Lower-->
-    <!-- <section class="contact-three">
+     <section class="contact-three">
         <div class="outer-container">
             <div class="row clearfix">
-               -Text Col
-                <div class="text-col col-xl-6 col-lg-12 col-md-12 col-sm-12">
-                    <div class="inner clearfix">
-                        <div class="top-icon"><span class="flaticon-internet"></span></div>
-                        <div class="content-box">
-                            <div class="sec-title">
-                                <div class="title-icon"><span class="icon"><img src="images/icons/leaf-two.png" alt="" title=""></span></div>
-                                <div class="subtitle">Get In Touch</div>
-                                <h2>Here to Help You</h2>
-                            </div>
 
-                            <div class="address">
-                                <h5>Main Office</h5>
-                                <div class="text">PO Box 515381 Lander, Garden Street LA 90029 USA.</div>
-                                <div class="link">
-                                    <a href="#" class="theme-btn"><span class="btn-title">Find On Map <i class="arrow flaticon-play-button-1"></i></span></a>
-                                </div>
-                            </div>
-
-                            <div class="info">
-                                <div class="row clearfix">
-                                   --Block-
-                                    <div class="info-block col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                        <div class="inner-box">
-                                            <div class="icon"><span class="flaticon-message-1"></span></div>
-                                            <h6>Phone & Email</h6>
-                                            <ul>
-                                                <li><a href="#">(+5) 678 90 12 345</a></li>
-                                                <li><a href="#">service@landerteam.com</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                   --Block-
-                                    <div class="info-block col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                        <div class="inner-box">
-                                            <div class="icon"><span class="flaticon-clock"></span></div>
-                                            <h6>Working Hours</h6>
-                                            <ul>
-                                                <li>Mon-Friday: 09am to 07pm</li>
-                                                <li>Sat: 10.00am to 04pm</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div> 
-
-               -Text Col
-                <div class="form-col col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                <div class="form-col col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="image-layer" style="background-image:url(images/background/contact-form-bg.jpg);"></div>
                     <div class="image-right"><img src="images/resource/contact-image.png" alt=""></div>
                     <div class="inner clearfix">
                         <div class="content-box">
-                            <div class="sec-title">
-                                <div class="title-icon"><span class="icon"><img src="images/icons/leaf-two.png" alt="" title=""></span></div>
-                                <div class="subtitle">Drop a Line</div>
-                                <h2>Send Message Us</h2>
-                            </div>
 
                             <div class="contact-form default-form">
-                                <form method="post" action="sendemail.php" id="contact-form">
+                                <form method="post" action="index.php?task=add" id="contact-form">
                                     <div class="row clearfix">
                                         <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                             <div class="field-inner">
-                                                <input type="text" name="username" value="" placeholder="Your Name *" required>
+                                                <input type="text" name="fname" value="<?php echo $fname;?>" placeholder="First Name *" required>
                                             </div>
                                         </div>
                                         <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                             <div class="field-inner">
-                                                <input type="email" name="email" value="" placeholder="Email Address*" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                            <div class="field-inner">
-                                                <input type="text" name="phone" value="" placeholder="Phone" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                            <div class="field-inner">
-                                                <select class="custom-select-box" name="subject">
-                                                    <option>Subject</option>
-                                                    <option>Spring Cleanup</option>
-                                                    <option>Plants Planting</option>
-                                                    <option>Water Fountain</option>
-                                                    <option>Hard Scaping</option>
-                                                    <option>Garden Care</option>
-                                                </select>
+                                                <input type="text" name="lname" value="<?php echo $lname;?>" placeholder="Last Name *" required>
                                             </div>
                                         </div>
                                         <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                             <div class="field-inner">
-                                                <textarea name="message" placeholder="Your Message ..." required></textarea>
+                                                <input type="number" name="roll" value="<?php echo $roll;?>" placeholder="Your Roll *" required>
                                             </div>
                                         </div>
+
                                         <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                             <div class="field-inner">
-                                                <button type="submit" class="theme-btn btn-style-four alternate"><span class="btn-title">Submit Now <i class="arrow flaticon-play-button-1"></i></span></button>
+                                                <button type="submit" class="theme-btn btn-style-four alternate" value="save" name="submit"><span class="btn-title">Submit Now <i class="arrow flaticon-play-button-1"></i></span></button>
                                             </div>
                                         </div>
                                     </div>
@@ -189,7 +203,63 @@ if('seed' == $task){
             </div>
         </div>
 
-    </section> -->
+    </section> <?php } ?>
+    <?php if('edit' == $task){
+        
+        $id = filter_input(INPUT_GET,'id',FILTER_SANITIZE_STRING);
+
+        $student = getStudent($id);
+        ?>
+        <!--End Header Lower-->
+        <?php if($student) : ?>
+     <section class="contact-three">
+        <div class="outer-container">
+            <div class="row clearfix">
+
+                <div class="form-col col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="image-layer" style="background-image:url(images/background/contact-form-bg.jpg);"></div>
+                    <div class="image-right"><img src="images/resource/contact-image.png" alt=""></div>
+                    <div class="inner clearfix">
+                        <div class="content-box">
+
+                            <div class="contact-form default-form">
+                                <form method="post" action="index.php?task=edit&id=<?php echo $id;?>" id="contact-form">
+                                    <input type="hidden" name="id" value="<?php echo $id;?>">
+                                    <div class="row clearfix">
+                                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                            <div class="field-inner">
+                                                <input type="text" name="fname" value="<?php echo $student['fname'];?>" placeholder="First Name *" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                            <div class="field-inner">
+                                                <input type="text" name="lname" value="<?php echo $student['lname'];?>" placeholder="Last Name *" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                            <div class="field-inner">
+                                                <input type="number" name="roll" value="<?php echo $student['roll'];?>" placeholder="Your Roll *" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                            <div class="field-inner">
+                                                <button type="submit" class="theme-btn btn-style-four alternate" value="save" name="submit"><span class="btn-title">Update <i class="arrow flaticon-play-button-1"></i></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+    <?php endif;?>
+     <?php } ?>
     <!-- Main Footer -->
     <footer class="main-footer">
         <div class="footer-bottom">
@@ -225,6 +295,7 @@ if('seed' == $task){
 <script src="js/appear.js"></script>
 <script src="js/wow.js"></script>
 <script src="js/custom-script.js"></script>
+<script src="js/script.js"></script>
 
 </body>
 </html>
