@@ -6,10 +6,26 @@ $error = $_GET['error'] ?? '0';
 if($task == 'seed'){
     seed();
 
+    if(!isAdmin()){
+        header('location: index.php?task=report');
+        return;
+    }
+
     echo "Sending is Complete";
 }
 
+if('edit' == $task){
+    if(!hasprivilange()){
+        header('location: index.php?task=report');
+    }
+}
+
 if('delete' == $task){
+
+    if(!isAdmin()){
+        header('location: index.php?task=report');
+        return;
+    }
 
     $id   = filter_input(INPUT_GET,'id',FILTER_SANITIZE_STRING);
 

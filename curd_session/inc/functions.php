@@ -59,7 +59,9 @@
             <tr>
                 <td>Name</td>
                 <td>Roll</td>
+                <?php if(isAdmin() || isEditor()) : ?>
                 <td>Action</td>
+                <?php endif;?>
             </tr>
            
             <?php 
@@ -67,7 +69,9 @@
                  <tr>
                    <td><?php printf("%s %s",$student['fname'],$student['lname']);?></td>
                    <td><?php printf("%s",$student['roll']);?></td>
-                   <td><?php printf('<a  href="index.php?task=edit&id=%s">Edit</a> | <a class="delete" href="index.php?task=delete&id=%s">Delete</a>',$student['id'],$student['id']);?></td>
+                   <?php if(isAdmin()) { ?>
+                   <td><?php printf('<a  href="index.php?task=edit&id=%s">Edit</a> | <a class="delete" href="index.php?task=delete&id=%s">Delete</a>',$student['id'],$student['id']);?></td><?php } elseif(isEditor()) { ?>
+                    <td><?php printf('<a  href="index.php?task=edit&id=%s">Edit</a>',$student['id']);?></td> <?php } ?>
                    </tr>
                 <?php }
             ?>
@@ -181,3 +185,14 @@
         return  $maxid+1;
     }
 
+    function isAdmin(){
+        return ($_SESSION['role'] == 'admin');
+    }
+
+    function isEditor(){
+        return ($_SESSION['role'] == 'editor');
+    }
+    
+    function hasprivilange(){
+        return (isAdmin() || isEditor());
+    }
