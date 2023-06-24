@@ -1,0 +1,34 @@
+*{
+    margin: 0;
+    padding: 0;
+
+}
+
+body {
+    margin-top: 30px;
+}
+
+.main-wrapper {
+    padding: 50px 150px 0px 150px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.select-area{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+input#bulksubmit {
+    cursor: pointer;
+    padding: 6px 10px;
+}
+
+.task-selected{
+    padding: 6px 5px;
+}
+
+form#add_child_task {
+    margin-bottom: 100px;
+}
